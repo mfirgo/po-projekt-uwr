@@ -1,3 +1,6 @@
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System;
 class Person{
     protected string _firstName;
     protected string _lastName;
@@ -15,7 +18,64 @@ class Person{
         this._firstName = firstName;
         this._lastName = lastName;
     }
+    // public String ToString(){
+    //     return this.initials+": "+this.firstName+" "+this.lastName;
+    // }
 }
-class Worker{
-    
+class Worker: Person{
+    private TimeIntervals availability;
+    private List<Qualification> qualifications;
+    private List<Shift> shifts;
+    public Worker(string firstName, string lastName) : base(firstName, lastName){
+        this.availability = new TimeIntervals();
+        this.qualifications = new List<Qualification>();
+    }
+    public void AddQualification(Qualification q){
+        this.qualifications.Add(q);
+    }
+    public ReadOnlyCollection<Qualification> Qualifications{
+        get{return this.qualifications.AsReadOnly();}
+    }
+    public TimeIntervals Availability{
+        get {return availability;}
+    }
+    public bool hasQualifications(Shift shift){
+        foreach(Qualification q in shift.Qualifications){
+            if (!this.qualifications.Contains(q)){
+                return false;
+            }
+        }
+        return true;
+    }
+    public bool isAvailable(TimeInterval interval){
+        return this.availability.contains(interval);
+    }
+    public bool canTakeShift(Shift shift){
+        return this.isAvailable(shift) && this.hasQualifications(shift);
+    }
+    public bool isAssigned(Shift shift){
+        return this.shifts.Contains(shift);
+    }
+    public void AssignShift(Shift shift){
+        if (this.isAssigned(shift)){
+            return;
+        } else if (this.canTakeShift(shift)){
+            try{
+                this.availability.subtract(shift);
+                shifts.Add(shift);
+                shift.AssignWorker(this);
+            } catch (ArgumentException e){
+                throw e;
+            }
+        } else{
+            throw new ArgumentException("Worker "+this.initials+" can't take shift "+shift.ToString());
+        }
+    }
+    public void unAssignShift(Shift shift){
+        if(this.isAssigned(shift)){
+            this.shifts.Remove(shift);
+            this.availability.Add(shift);
+            shift.unAssignWorker(this);
+        }
+    }
 }
