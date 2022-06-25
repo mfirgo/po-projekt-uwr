@@ -18,9 +18,9 @@ class Person{
         this._firstName = firstName;
         this._lastName = lastName;
     }
-    // public String ToString(){
-    //     return this.initials+": "+this.firstName+" "+this.lastName;
-    // }
+    public String toString(){
+        return this.initials+": "+this.firstName+" "+this.lastName;
+    }
 }
 class Worker: Person{
     private TimeIntervals availability;
@@ -29,12 +29,19 @@ class Worker: Person{
     public Worker(string firstName, string lastName) : base(firstName, lastName){
         this.availability = new TimeIntervals();
         this.qualifications = new List<Qualification>();
+        this.shifts = new List<Shift>();
     }
+    // public override String toString(){
+    //     return base.toString();
+    // }
     public void AddQualification(Qualification q){
         this.qualifications.Add(q);
     }
     public ReadOnlyCollection<Qualification> Qualifications{
         get{return this.qualifications.AsReadOnly();}
+    }
+    public ReadOnlyCollection<Shift> Shifts{
+        get{return this.shifts.AsReadOnly();}
     }
     public TimeIntervals Availability{
         get {return availability;}

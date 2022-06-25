@@ -23,6 +23,12 @@ Qualifications.exe: $(CSHARP_SOURCE_FILES)
 qualifications: Qualifications.exe
 	@mono Qualifications.exe
 
+Workplace.exe: $(CSHARP_SOURCE_FILES)
+	@$(CSHARP_COMPILER) $(CSHARP_SOURCE_FILES) -out:Workplace.exe -main:Workplace_tests
+
+workplace: Workplace.exe
+	@mono Workplace.exe
+
 run: all
 	@mono $(EXECUTABLE)
 

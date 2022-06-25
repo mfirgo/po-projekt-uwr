@@ -101,7 +101,7 @@ class TimeIntervals{
     public TimeIntervals(){
         this.interval_list = new List<TimeInterval>();
     }
-    public override string ToString(){
+    public override String ToString(){
         String interval_string = "TimeIntervals:\n";
         foreach (TimeInterval interval in this.interval_list){
             interval_string += interval.ToString() + "\n";
@@ -169,6 +169,9 @@ class Shift : TimeInterval{
             qualifications.Add(Qualification.GetInstance(name));
         }
     }
+    public override String ToString(){
+        return base.ToString() +" "+ (this.assignedWorker == null ? " unassigned" : (" " +this.assignedWorker.initials));
+    }
     public ReadOnlyCollection<Qualification> Qualifications{
         get {return this.qualifications.AsReadOnly();}
     }
@@ -179,8 +182,11 @@ class Shift : TimeInterval{
         worker.AssignShift(this);
         this.assignedWorker = worker;
     }
+    public bool isAssigned(){
+        return this.assignedWorker != null;
+    }
     public bool isAssigned(Worker worker){
-        return this.assignedWorker.Equals(worker);
+        return this.isAssigned() && this.assignedWorker.Equals(worker);
     }
     public Worker AssignedWorker{
         get{return assignedWorker;}
