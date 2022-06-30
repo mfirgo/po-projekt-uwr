@@ -29,6 +29,12 @@ Workplace.exe: $(CSHARP_SOURCE_FILES)
 workplace: Workplace.exe
 	@mono Workplace.exe
 
+Timetypes.exe: $(CSHARP_SOURCE_FILES)
+	@$(CSHARP_COMPILER) $(CSHARP_SOURCE_FILES) -out:Timetypes.exe -main:TimeTest
+
+timetypes: Timetypes.exe
+	@mono Timetypes.exe
+
 run: all
 	@mono $(EXECUTABLE)
 

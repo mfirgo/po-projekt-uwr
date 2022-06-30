@@ -9,6 +9,9 @@ class Qualification{
     public String Name{
         get{return this.name;}
     }
+    public override String ToString(){
+        return this.Name;
+    }
     public String Description{
         get{return this.description;}
         //set{this.description = value}

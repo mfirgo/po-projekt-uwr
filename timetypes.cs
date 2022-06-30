@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 class TimeInterval: IEquatable<TimeInterval>{
     private DateTime start;
     private DateTime end;
@@ -23,6 +24,9 @@ class TimeInterval: IEquatable<TimeInterval>{
     // }
     public TimeInterval(DateTime start, DateTime end){
         this.init(start, end);
+    }
+    public TimeInterval(String start, String end){
+        this.init(DateTime.Parse(start), DateTime.Parse(end));
     }
     public DateTime Start{
         get{ return start;}
@@ -49,7 +53,8 @@ class TimeInterval: IEquatable<TimeInterval>{
         return this.Start<other.Start && this.End>other.End;
     }
     public bool intersects(TimeInterval other){
-        return this.End>=other.Start || this.Start<=other.End;
+        //return this.End>=other.Start || this.Start<=other.End;
+        return !(this.End < other.Start || this.Start > other.End);
     }
     // public bool intersectsLeft(TimeInterval other){
     //     return other.Start<this.End && this.End<other.End;
@@ -102,7 +107,7 @@ class TimeIntervals{
         this.interval_list = new List<TimeInterval>();
     }
     public override String ToString(){
-        String interval_string = "TimeIntervals:\n";
+        String interval_string = "";//"TimeIntervals:\n";
         foreach (TimeInterval interval in this.interval_list){
             interval_string += interval.ToString() + "\n";
         }
@@ -161,16 +166,20 @@ class Shift : TimeInterval{
     // information about place / qualifications of worker needed
     private Worker assignedWorker;
     private List<Qualification> qualifications;
-    public Shift(DateTime start, DateTime end, List<String> qualifications_names): base(start, end){
+    private Workplace workplace;
+    public Shift(DateTime start, DateTime end, List<String> qualifications_names, Workplace workplace): base(start, end){
         //this.init(start, end);
         this.assignedWorker = null;
+        this.workplace = workplace;
         qualifications = new List<Qualification>();
         foreach (String name in qualifications_names){
             qualifications.Add(Qualification.GetInstance(name));
         }
     }
     public override String ToString(){
-        return base.ToString() +" "+ (this.assignedWorker == null ? " unassigned" : (" " +this.assignedWorker.initials));
+        return base.ToString() +" "+ 
+               (this.assignedWorker == null ? " unassigned" : (" " +this.assignedWorker.initials))
+               + " [" + (this.qualifications.Count>0 ? this.qualifications.Select(i => i.ToString()).ToList().Aggregate((x, y) => x + " " + y) : "") +"]";
     }
     public ReadOnlyCollection<Qualification> Qualifications{
         get {return this.qualifications.AsReadOnly();}
@@ -197,6 +206,15 @@ class Shift : TimeInterval{
             worker.unAssignShift(this);
         }
     }
+    public ReadOnlyCollection<Worker> possibleWorkers(){
+        List<Worker> result = new List<Worker>();
+        foreach(Worker worker in this.workplace.Workers){
+            if (worker.canTakeShift(this)){
+                result.Add(worker);
+            }
+        }
+        return result.AsReadOnly();
+    }
 }
 
 class TimeTest{
@@ -204,17 +222,21 @@ class TimeTest{
     static TimeInterval interval2;
     static TimeInterval interval3;
     static TimeInterval interval4;
+    static TimeInterval interval5;
     private static void init_variables(){
         interval1 = new TimeInterval(new DateTime(2022, 6, 20, 8,0,0), new DateTime(2022, 6, 20, 10,0,0));
         interval2 = new TimeInterval(new DateTime(2022, 6, 20, 10,0,0), new DateTime(2022, 6, 20, 12,0,0));
         interval3 = new TimeInterval(new DateTime(2022, 6, 20, 8,0,0), new DateTime(2022, 6, 20, 20,0,0));
         interval4 = new TimeInterval(new DateTime(2022, 6, 20, 6,0,0), new DateTime(2022, 6, 20, 10,0,0));
+        interval5 = new TimeInterval(new DateTime(2022, 6, 21, 6,0,0), new DateTime(2022, 6, 21, 10,0,0));
+
     }
     private static void print_intervals(){
         Console.WriteLine("interval1: " + interval1.ToString());
         Console.WriteLine("interval2: " + interval2.ToString());
         Console.WriteLine("interval3: " + interval3.ToString());
         Console.WriteLine("interval4: " + interval4.ToString());
+        Console.WriteLine("interval5: " + interval5.ToString());
     }
     private static void comparison_test(){
         Console.WriteLine(interval1.Equals(new TimeInterval(new DateTime(2022, 6, 20, 8,0,0), new DateTime(2022, 6, 20, 10,0,0))));
@@ -238,6 +260,8 @@ class TimeTest{
         Console.WriteLine(intervals.ToString());
         intervals.Add(interval4);
         Console.WriteLine(intervals.ToString());
+        intervals.Add(interval5);
+        Console.WriteLine(intervals.ToString());
     }
 
     public static void Main(){
@@ -245,6 +269,7 @@ class TimeTest{
         print_intervals();
         comparison_test();
         add_timeinterval_test();
+        Console.WriteLine(interval1.intersects(interval5));
         add_timeintervals_test();
     }
 }

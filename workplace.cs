@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 class Workplace{
     private List<Worker> workers;
     private List<Shift> shifts;
@@ -18,13 +19,23 @@ class Workplace{
     }
     // I dont want the same shift to be assigned in several workplaces so shift is created by workplace
     public void addShift(DateTime start, DateTime end, List<String> qualifications_names){
-        this.shifts.Add(new Shift(start, end, qualifications_names));
+        this.shifts.Add(new Shift(start, end, qualifications_names, this));
+    }
+    public void addShift(String start, String end, List<String> qualifications_names){
+        this.shifts.Add(new Shift(DateTime.Parse(start), DateTime.Parse(end), qualifications_names, this));
     }
     public ReadOnlyCollection<Shift> Shifts{
         get {return this.shifts.AsReadOnly();}
     }
     public ReadOnlyCollection<Worker> Workers{
         get {return this.workers.AsReadOnly();}
+    }
+    public override String ToString(){
+        String result = this.name + "\t- workers: ";
+        foreach(Worker w in this.workers){
+            result+= w.initials + " ";
+        }
+        return result;
     }
 }
 class Workplace_tests{

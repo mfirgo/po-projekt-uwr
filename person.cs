@@ -21,7 +21,7 @@ class Person{
         this._firstName = firstName;
         this._lastName = lastName;
     }
-    public String ToString(){
+    public override String ToString(){
         return this.initials+": "+this.firstName+" "+this.lastName;
     }
 }
