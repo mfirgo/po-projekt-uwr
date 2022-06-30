@@ -34,7 +34,7 @@ class Workplace_tests{
         Worker worker = new Worker("Tom", "Cruise");
         workplace.addWorker(worker);
         foreach (Worker w in workplace.Workers){
-            Console.WriteLine(w.toString());
+            Console.WriteLine(w.ToString());
             Console.WriteLine(w);
         }
         Console.WriteLine(string.Join("\n", workplace.Workers[0].Shifts));

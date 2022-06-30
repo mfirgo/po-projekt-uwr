@@ -11,6 +11,9 @@ class Person{
     public string lastName{
         get { return _lastName; }
     }
+    public string fullName{
+        get{ return _firstName + " "+ _lastName;}
+    }
     public string initials{
         get { return _firstName.Substring(0,1)+_lastName.Substring(0,2);}
     }
@@ -18,7 +21,7 @@ class Person{
         this._firstName = firstName;
         this._lastName = lastName;
     }
-    public String toString(){
+    public String ToString(){
         return this.initials+": "+this.firstName+" "+this.lastName;
     }
 }
@@ -36,6 +39,19 @@ class Worker: Person{
     // }
     public void AddQualification(Qualification q){
         this.qualifications.Add(q);
+    }
+    public void AddQualification(String q){
+        this.qualifications.Add(Qualification.GetInstance(q));
+    }
+    public void AddQualifications(List<String> qualifications){
+        foreach(String q in qualifications){
+            this.AddQualification(q);
+        }
+    }
+    public void AddQualifications(List<Qualification> qualifications){
+        foreach(Qualification q in qualifications){
+            this.AddQualification(q);
+        }
     }
     public ReadOnlyCollection<Qualification> Qualifications{
         get{return this.qualifications.AsReadOnly();}
