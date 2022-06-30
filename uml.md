@@ -18,10 +18,12 @@
     class Shift{
         + required_qualifications
         + assigned_worker
+        + workplace
     }
 
     TimeInterval --* TimeIntervals 
     Shift ^-- TimeInterval
+    Shift *--* Workplace
 
 
     class Person{
@@ -35,21 +37,17 @@
         + assigned_shifts
         + (current availability)
     }
-    Worker *--^ Shift
+    Worker *--* Shift
     Worker *-- TimeIntervals
     Worker ^-- Person
 
-    class TimeTable{
-        + shifts
-    }
-    TimeTable *-- Shift
+
 
     class Workplace{
         + timetable
         + workers
     }
     Workplace *-- Worker
-    Workplace *-- TimeTable
 
     class Qualification{
         + description
